@@ -10,14 +10,14 @@ SRCS = \
 	src/util.c
 OBJS = $(subst .c,.o,$(SRCS))
 
-CFLAGS = -O2
-LIBS = -lz -lpthread -lpcre -lshlwapi
+CFLAGS = -O2 -DPCRE_STATIC -DPTW32_STATIC_LIB -I /usr/local/include
+LIBS = -lz -llzma -lpthread -lpcre -lshlwapi
 TARGET = ag.exe
 
 all : $(TARGET)
 
 $(TARGET) : $(OBJS)
-	gcc -o $@ $(OBJS) $(LIBS)
+	gcc -static -o $@ $(OBJS) -L /usr/local/lib $(LIBS)
 
 .c.o :
 	gcc -c $(CFLAGS) -Isrc $< -o $@

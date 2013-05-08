@@ -7,6 +7,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#ifdef _WIN32
+#include <windows.h>            /* MAX_PATH */
+#endif
+
 #include "config.h"
 #include "ignore.h"
 #include "options.h"
