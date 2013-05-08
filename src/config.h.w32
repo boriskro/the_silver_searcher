@@ -1,0 +1,3 @@
+#define HAVE_LZMA_H
+#define PACKAGE_VERSION "0.15pre"
+
