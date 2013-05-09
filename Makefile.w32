@@ -1,3 +1,15 @@
+ifndef DEBUG
+# specify DEBUG=1 on the make's command line if you'd like debug build		
+DEBUG=0
+endif
+
+ifeq ($(DEBUG),0)
+DBGCFLAGS=-O2
+else
+DBGCFLAGS=-g
+DBGLFLAGS=-g
+endif
+
 SRCS = \
 	src/decompress.c \
 	src/ignore.c \
@@ -10,14 +22,17 @@ SRCS = \
 	src/util.c
 OBJS = $(subst .c,.o,$(SRCS))
 
-CFLAGS = -O2 -DPCRE_STATIC -DPTW32_STATIC_LIB -I /usr/local/include
+CFLAGS = $(DBGCFLAGS) -DPCRE_STATIC -DPTW32_STATIC_LIB -I /usr/local/include
 LIBS = -lz -llzma -lpthread -lpcre -lshlwapi
 TARGET = ag.exe
 
 all : $(TARGET)
 
-$(TARGET) : $(OBJS)
-	gcc -static -o $@ $(OBJS) -L /usr/local/lib $(LIBS)
+$(TARGET) : src/config.h $(OBJS)
+	gcc $(DBGLFLAGS) -static -o $@ $(OBJS) -L /usr/local/lib $(LIBS)
+
+src/config.h: src/config.h.w32
+	cp $< $@
 
 .c.o :
 	gcc -c $(CFLAGS) -Isrc $< -o $@
