@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
             /* Search routine needs the query to be lowercase */
             char *c = opts.query;
             for (; *c != '\0'; ++c) {
-                *c = (char) tolower(*c);
+                *c = (char)tolower(*c);
             }
         }
         generate_skip_lookup(opts.query, opts.query_len, skip_lookup, opts.casing == CASE_SENSITIVE);
@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
         search_stream(stdin, "");
     } else {
         for (i = 0; i < workers_len; i++) {
-            int rv = pthread_create(&(workers[i]), NULL, &search_file_worker, NULL);
+            int rv = pthread_create(&(workers[i]), NULL, &search_file_worker, &i);
             if (rv != 0) {
                 die("error in pthread_create(): %s", strerror(rv));
             }
@@ -121,8 +121,10 @@ int main(int argc, char **argv) {
             symhash = NULL;
             search_dir(root_ignores, base_paths[i], paths[i], 0);
         }
+        pthread_mutex_lock(&work_queue_mtx);
         done_adding_files = TRUE;
         pthread_cond_broadcast(&files_ready);
+        pthread_mutex_unlock(&work_queue_mtx);
         for (i = 0; i < workers_len; i++) {
             if (pthread_join(workers[i], NULL)) {
                 die("pthread_join failed!");
@@ -142,6 +144,7 @@ int main(int argc, char **argv) {
     if (opts.pager) {
         pclose(out_fd);
     }
+    cleanup_options();
     pthread_cond_destroy(&files_ready);
     pthread_mutex_destroy(&work_queue_mtx);
     pthread_mutex_destroy(&stats_mtx);

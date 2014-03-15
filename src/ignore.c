@@ -12,10 +12,10 @@
 #include "util.h"
 
 #ifdef _WIN32
-# include <shlwapi.h>
-# define fnmatch(x, y, z) (!PathMatchSpec(y,x))
+#include <shlwapi.h>
+#define fnmatch(x, y, z) (!PathMatchSpec(y, x))
 #else
-# include <fnmatch.h>
+#include <fnmatch.h>
 const int fnmatch_flags = 0 & FNM_PATHNAME;
 #endif
 
@@ -67,7 +67,7 @@ void cleanup_ignore(ignores *ig) {
     }
 }
 
-void add_ignore_pattern(ignores *ig, const char* pattern) {
+void add_ignore_pattern(ignores *ig, const char *pattern) {
     int i;
     int pattern_len;
 
@@ -78,7 +78,7 @@ void add_ignore_pattern(ignores *ig, const char* pattern) {
 
     /* Kill trailing whitespace */
     for (pattern_len = strlen(pattern); pattern_len > 0; pattern_len--) {
-        if (!isspace(pattern[pattern_len-1])) {
+        if (!isspace(pattern[pattern_len - 1])) {
             break;
         }
     }
@@ -91,18 +91,18 @@ void add_ignore_pattern(ignores *ig, const char* pattern) {
     /* TODO: de-dupe these patterns */
     if (is_fnmatch(pattern)) {
         ig->regexes_len++;
-        ig->regexes = ag_realloc(ig->regexes, ig->regexes_len * sizeof(char*));
+        ig->regexes = ag_realloc(ig->regexes, ig->regexes_len * sizeof(char *));
         ig->regexes[ig->regexes_len - 1] = ag_strndup(pattern, pattern_len);
         log_debug("added regex ignore pattern %s", pattern);
     } else {
         /* a balanced binary tree is best for performance, but I'm lazy */
         ig->names_len++;
-        ig->names = ag_realloc(ig->names, ig->names_len * sizeof(char*));
+        ig->names = ag_realloc(ig->names, ig->names_len * sizeof(char *));
         for (i = ig->names_len - 1; i > 0; i--) {
-            if (strcmp(pattern, ig->names[i-1]) > 0) {
+            if (strcmp(pattern, ig->names[i - 1]) > 0) {
                 break;
             }
-            ig->names[i] = ig->names[i-1];
+            ig->names[i] = ig->names[i - 1];
         }
         ig->names[i] = ag_strndup(pattern, pattern_len);
         log_debug("added literal ignore pattern %s", pattern);
@@ -126,8 +126,8 @@ void load_ignore_patterns(ignores *ig, const char *path) {
         if (line_len == 0 || line[0] == '\n' || line[0] == '#') {
             continue;
         }
-        if (line[line_len-1] == '\n') {
-            line[line_len-1] = '\0'; /* kill the \n */
+        if (line[line_len - 1] == '\n') {
+            line[line_len - 1] = '\0'; /* kill the \n */
         }
         add_ignore_pattern(ig, line);
     }
@@ -184,8 +184,9 @@ void load_svn_ignore_patterns(ignores *ig, const char *path) {
         goto cleanup;
     }
     char *patterns = entry;
+    size_t patterns_len = strlen(patterns);
     while (*patterns != '\0' && patterns < (entry + bytes_read)) {
-        for (line_len = 0; line_len < strlen(patterns); line_len++) {
+        for (line_len = 0; line_len < patterns_len; line_len++) {
             if (patterns[line_len] == '\n') {
                 break;
             }
@@ -196,15 +197,16 @@ void load_svn_ignore_patterns(ignores *ig, const char *path) {
             free(entry_line);
         }
         patterns += line_len + 1;
+        patterns_len -= line_len + 1;
     }
     free(entry);
-    cleanup:;
+cleanup:
     free(dir_prop_base);
     free(key);
     fclose(fp);
 }
 
-static int ackmate_dir_match(const char* dir_name) {
+static int ackmate_dir_match(const char *dir_name) {
     int rc = 0;
 
     if (opts.ackmate_dir_filter != NULL) {
@@ -264,15 +266,22 @@ static int path_ignore_search(const ignores *ig, const char *path, const char *f
 /* This function is REALLY HOT. It gets called for every file */
 int filename_filter(const char *path, const struct dirent *dir, void *baton) {
     const char *filename = dir->d_name;
+    size_t filename_len = strlen(filename);
     size_t i;
-    scandir_baton_t *scandir_baton = (scandir_baton_t*) baton;
+    scandir_baton_t *scandir_baton = (scandir_baton_t *)baton;
     const ignores *ig = scandir_baton->ig;
     const char *base_path = scandir_baton->base_path;
+    size_t base_path_len = strlen(base_path);
     const char *path_start = path;
     char *temp;
 
     if (!opts.follow_symlinks && is_symlink(path, dir)) {
         log_debug("File %s ignored becaused it's a symlink", dir->d_name);
+        return 0;
+    }
+
+    if (is_named_pipe(path, dir)) {
+        log_debug("%s ignored because it's a named pipe", path);
         return 0;
     }
 
@@ -289,7 +298,7 @@ int filename_filter(const char *path, const struct dirent *dir, void *baton) {
         return 1;
     }
 
-    for (i = 0; base_path[i] == path[i] && i < strlen(base_path); i++) {
+    for (i = 0; base_path[i] == path[i] && i < base_path_len; i++) {
         /* base_path always ends with "/\0" while path doesn't, so this is safe */
         path_start = path + i + 2;
     }
@@ -299,7 +308,7 @@ int filename_filter(const char *path, const struct dirent *dir, void *baton) {
         return 0;
     }
 
-    if (is_directory(path, dir) && filename[strlen(filename) - 1] != '/') {
+    if (is_directory(path, dir) && filename[filename_len - 1] != '/') {
         ag_asprintf(&temp, "%s/", filename);
         int rv = path_ignore_search(ig, path_start, temp);
         free(temp);
@@ -316,7 +325,7 @@ int filename_filter(const char *path, const struct dirent *dir, void *baton) {
             return 0;
         }
 
-        if (is_directory(path, dir) && temp[strlen(filename) - 1] != '/') {
+        if (is_directory(path, dir) && temp[filename_len - 1] != '/') {
             ag_asprintf(&temp2, "%s/", temp);
             int rv = path_ignore_search(ig, path_start, temp2);
             free(temp2);

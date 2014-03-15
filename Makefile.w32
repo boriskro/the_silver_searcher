@@ -10,9 +10,12 @@ DBGCFLAGS=-g
 DBGLFLAGS=-g
 endif
 
+VERSION=$(shell grep -Po "(?<=\[)([0-9.]+.[0-9]+.[0-9]+)(?=\])" configure.ac)
+
 SRCS = \
 	src/decompress.c \
 	src/ignore.c \
+	src/lang.c \
 	src/log.c \
 	src/main.c \
 	src/options.c \
@@ -22,8 +25,9 @@ SRCS = \
 	src/util.c
 OBJS = $(subst .c,.o,$(SRCS))
 
-CFLAGS = $(DBGCFLAGS) -DPCRE_STATIC -DPTW32_STATIC_LIB -I /usr/local/include
-LIBS = -lz -llzma -lpthread -lpcre -lshlwapi
+CFLAGS = $(DBGCFLAGS) -DPCRE_STATIC -DPTW32_STATIC_LIB -I /usr/local/include -Isrc/win32 -DPACKAGE_VERSION=\"$(VERSION)\"
+LIBS = -lz -lpthread -lpcre -llzma -lshlwapi
+
 TARGET = ag.exe
 
 all : $(TARGET)
