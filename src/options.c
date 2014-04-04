@@ -241,11 +241,10 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
 
 #ifndef _WIN32
     rv = fstat(fileno(stdin), &statbuf);
-    if (rv != 0) {
-        die("Error fstat()ing stdin");
-    }
-    if (S_ISFIFO(statbuf.st_mode)) {
-        opts.search_stream = 1;
+    if (rv == 0) {
+        if (S_ISFIFO(statbuf.st_mode)) {
+            opts.search_stream = 1;
+        }
     }
 #endif
 
@@ -511,8 +510,9 @@ skip_group:
     if (opts.search_stream) {
         opts.print_break = 0;
         opts.print_heading = 0;
-        if (opts.print_line_numbers != 2)
+        if (opts.print_line_numbers != 2) {
             opts.print_line_numbers = 0;
+        }
     }
 
     if (needs_query) {
