@@ -10,7 +10,7 @@ DBGCFLAGS=-g
 DBGLFLAGS=-g
 endif
 
-VERSION=$(shell grep -Po "(?<=\[)([0-9.]+.[0-9]+.[0-9]+)(?=\])" configure.ac)
+VERSION=$(shell grep -m 1 -Eo "[0-9]+\.[0-9]+\.[^]]+" configure.ac)
 
 SRCS = \
 	src/decompress.c \
@@ -32,11 +32,8 @@ TARGET = ag.exe
 
 all : $(TARGET)
 
-$(TARGET) : src/config.h $(OBJS)
+$(TARGET) : $(OBJS)
 	gcc $(DBGLFLAGS) -static -o $@ $(OBJS) -L /usr/local/lib $(LIBS)
-
-src/config.h: src/config.h.w32
-	cp $< $@
 
 .c.o :
 	gcc -c $(CFLAGS) -Isrc $< -o $@
