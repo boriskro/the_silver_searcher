@@ -6,8 +6,10 @@
 
 #include <pcre.h>
 
+#define DEFAULT_AFTER_LEN 2
+#define DEFAULT_BEFORE_LEN 2
 #define DEFAULT_CONTEXT_LEN 2
-
+#define DEFAULT_MAX_SEARCH_DEPTH 25
 enum case_behavior {
     CASE_SENSITIVE,
     CASE_INSENSITIVE,
@@ -15,12 +17,20 @@ enum case_behavior {
     CASE_SENSITIVE_RETRY_INSENSITIVE /* for future use */
 };
 
+enum path_print_behavior {
+    PATH_PRINT_DEFAULT, /* PRINT_TOP if > 1 file being searched, else PRINT_NOTHING */
+    PATH_PRINT_DEFAULT_EACH_LINE, /* PRINT_EACH_LINE if > 1 file being searched, else PRINT_NOTHING */
+    PATH_PRINT_TOP,
+    PATH_PRINT_EACH_LINE,
+    PATH_PRINT_NOTHING
+};
+
 typedef struct {
     int ackmate;
     pcre *ackmate_dir_filter;
     pcre_extra *ackmate_dir_filter_extra;
-    int after;
-    int before;
+    size_t after;
+    size_t before;
     enum case_behavior casing;
     const char *file_search_string;
     int match_files;
@@ -39,12 +49,14 @@ typedef struct {
     int literal_ends_wordchar;
     int max_matches_per_file;
     int max_search_depth;
+    int null_follows_filename;
     char *path_to_agignore;
     int print_break;
     int print_filename_only;
-    int print_heading;
+    int print_path;
     int print_line_numbers;
     int print_long_lines; /* TODO: support this in print.c */
+    int passthrough;
     pcre *re;
     pcre_extra *re_extra;
     int recurse_dirs;
@@ -56,6 +68,7 @@ typedef struct {
     int search_stream; /* true if tail -F blah | ag */
     int stats;
     size_t stream_line_num; /* This should totally not be in here */
+    int match_found; /* This should totally not be in here */
     ino_t stdout_inode;
     char *query;
     int query_len;
