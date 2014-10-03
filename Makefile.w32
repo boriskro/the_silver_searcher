@@ -1,5 +1,5 @@
 ifndef DEBUG
-# specify DEBUG=1 on the make's command line if you'd like debug build		
+# specify DEBUG=1 on the make's command line if you'd like debug build
 DEBUG=0
 endif
 
@@ -17,16 +17,16 @@ VERSION=$(shell grep -m 1 -Eo "[0-9]+\.[0-9]+\.[^]]+" configure.ac)
 CC=gcc
 
 SRCS = \
-	src/decompress.c \
-	src/ignore.c \
-	src/lang.c \
-	src/log.c \
-	src/main.c \
-	src/options.c \
-	src/print.c \
-	src/scandir.c \
-	src/search.c \
-	src/util.c
+        src/decompress.c \
+        src/ignore.c \
+        src/lang.c \
+        src/log.c \
+        src/main.c \
+        src/options.c \
+        src/print.c \
+        src/scandir.c \
+        src/search.c \
+        src/util.c
 OBJS = $(subst .c,.o,$(SRCS))
 
 CFLAGS = $(DBGCFLAGS) -DPCRE_STATIC -DPTW32_STATIC_LIB -I /usr/local/include -Isrc/win32 -DPACKAGE_VERSION=\"$(VERSION)\"
@@ -37,10 +37,10 @@ TARGET = ag.exe
 all : $(TARGET)
 
 $(TARGET) : $(OBJS)
-	$(CC) $(LFLAGS) -o $@ $(OBJS) $(LIBS)
+        $(CC) $(LFLAGS) -o $@ $(OBJS) $(LIBS)
 
 .c.o :
-	$(CC) -c $(CFLAGS) -Isrc $< -o $@
+        $(CC) -c $(CFLAGS) -Isrc $< -o $@
 
 clean :
-	rm -f src/*.o $(TARGET)
+        rm -f src/*.o $(TARGET)
