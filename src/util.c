@@ -53,6 +53,17 @@ char *ag_strndup(const char *s, size_t size) {
 #endif
 }
 
+void free_strings(char **strs, const size_t strs_len) {
+    if (strs == NULL) {
+        return;
+    }
+    size_t i;
+    for (i = 0; i < strs_len; i++) {
+        free(strs[i]);
+    }
+    free(strs);
+}
+
 void generate_alpha_skip(const char *find, size_t f_len, size_t skip_lookup[], const int case_sensitive) {
     size_t i;
 
@@ -545,7 +556,7 @@ ssize_t getline(char **lineptr, size_t *n, FILE *stream) {
  */
 char *realpath(const char *path, char *resolved_path) {
     char *p;
-    char tmp[MAX_PATH + 1];
+    char tmp[_MAX_PATH + 1];
     strlcpy(tmp, path, sizeof(tmp));
     p = tmp;
     while (*p) {
