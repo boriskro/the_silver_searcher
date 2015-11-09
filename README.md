@@ -4,7 +4,9 @@ A code searching tool similar to `ack`, with a focus on speed.
 
 [![Build Status](https://travis-ci.org/ggreer/the_silver_searcher.svg?branch=master)](https://travis-ci.org/ggreer/the_silver_searcher)
 
-[![Floobits Status](https://floobits.com/ggreer/ag.png)](https://floobits.com/ggreer/ag/redirect)
+[![Floobits Status](https://floobits.com/ggreer/ag.svg)](https://floobits.com/ggreer/ag/redirect)
+
+[![#ag on Freenode](http://img.shields.io/Freenode/%23ag.png)](https://webchat.freenode.net/?channels=ag)
 
 Do you know C? I invite you to pair with me to [help me get to Ag 1.0](http://geoff.greer.fm/2014/10/13/help-me-get-to-ag-10/).
 
@@ -54,9 +56,12 @@ or
 * Ubuntu >= 13.10 (Saucy) or Debian >= 8 (Jessie)
 
         apt-get install silversearcher-ag
-* Fedora 19+
+* Fedora 21 and lower
 
         yum install the_silver_searcher
+* Fedora 22+
+
+        dnf install the_silver_searcher
 * RHEL7+
 
         rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
@@ -120,6 +125,8 @@ or
 
 ### Building a release tarball
 
+GPG-signed releases are available [here](http://geoff.greer.fm/ag).
+
 Building release tarballs requires the same dependencies, except for automake and pkg-config. Once you've installed the dependencies, just run:
 
     ./configure
@@ -149,9 +156,10 @@ There's also a fork of ack.vim tailored for use with Ag: [ag.vim][]
 
 ### Emacs
 
-You can use [ag.el][] as an Emacs fronted to Ag.
+You can use [ag.el][] as an Emacs fronted to Ag. See also: [helm-ag].
 
 [ag.el]: https://github.com/Wilfred/ag.el
+[helm-ag]: https://github.com/syohex/emacs-helm-ag
 
 ### TextMate
 

@@ -27,7 +27,8 @@ SRCS = \
 	src/print.c \
 	src/scandir.c \
 	src/search.c \
-	src/util.c
+	src/util.c \
+	src/print_w32.c
 OBJS = $(subst .c,.o,$(SRCS))
 
 CFLAGS = $(DBGCFLAGS) -DPCRE_STATIC -DPTW32_STATIC_LIB -I /usr/local/include -Isrc/win32 -DPACKAGE_VERSION=\"$(VERSION)\"

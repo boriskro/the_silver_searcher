@@ -41,6 +41,7 @@ typedef struct {
     char *color_line_number;
     char *color_match;
     char *color_path;
+    int color_win_ansi;
     int column;
     int context;
     int follow_symlinks;
@@ -50,6 +51,7 @@ typedef struct {
     int literal_ends_wordchar;
     size_t max_matches_per_file;
     int max_search_depth;
+    int multiline;
     int one_dev;
     int only_matching;
     char path_sep;
