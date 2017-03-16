@@ -9,10 +9,11 @@
 #include "util.h"
 
 #ifdef _WIN32
-#include <windows.h>            /* MAX_PATH */
+#include <windows.h>
 #define flockfile(x)
 #define funlockfile(x)
 #define getc_unlocked(x) getc(x)
+#define S_ISSOCK(x) 0
 #endif
 
 #define CHECK_AND_RETURN(ptr)             \

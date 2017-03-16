@@ -32,7 +32,7 @@ SRCS = \
 	src/print_w32.c
 OBJS = $(subst .c,.o,$(SRCS))
 
-CFLAGS = $(DBGCFLAGS) -DPCRE_STATIC -DPTW32_STATIC_LIB -I /usr/local/include -Isrc/win32 -DPACKAGE_VERSION=\"$(VERSION)\"
+CFLAGS = $(DBGCFLAGS) -DPCRE_STATIC -DPTW32_STATIC_LIB -I /usr/local/include -Isrc/win32 -I /mingw64/include -DPACKAGE_VERSION=\"$(VERSION)\"
 LIBS = -lz -lpthread -lpcre -llzma -lshlwapi
 
 TARGET = ag.exe
