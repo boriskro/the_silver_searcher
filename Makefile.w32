@@ -13,7 +13,7 @@ endif
 LFLAGS = $(DBGLFLAGS) -static -L /usr/local/lib
 
 GREP=grep
-VERSION:=$(shell $(GREP) -m 1 -Eo "[0-9]+\.[0-9]+\.[^]]+" configure.ac)
+VERSION:=$(shell $(GREP) -m 1 -Eo "[0-9]+\.[0-9]+\.[^]]+" configure.ac)-bk
 
 CC=gcc
 RM=/bin/rm
